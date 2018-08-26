@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="css/reset.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+    <script src="js/jquery.js" type="text/javascript"></script>
+</head>
+
+<body>
+    <div id="loader-wrapper">
+        <div id="loader">
+            <video id="loader-bici" autoplay muted loop src="videos/loader.mp4"></video>
+        </div>
+        <div class="loader-section section-top"></div>
+        <div class="loader-section section-bottom"></div>
+    </div>
+
+    <div class="masthead">
+        <video autoplay muted loop id="rotonda">
+            <source src="/videos/videoRotonda.m4v">
+        </video>
+        
+        <div id="title">
+            <h1>BikeMTY</h1>
+        </div>
+
+        <div class="container-login">
+            <h1>Iniciar Sesión</h1>
+            <p>Para ingresar al sistema de préstamos de bicicletas, ingresa tu información académica:</p>
+            <form action="action_page.php">
+                <div class="container">
+                    <label for="uname"><b>Matrícula</b></label>
+                    <input type="text" placeholder="Ingresa tu matrícula" name="uname" required>
+
+                    <label for="psw"><b>Contraseña</b></label>
+                    <input type="password" placeholder="Ingresa tu contraseña" name="psw" required>
+
+                    <button type="submit">Iniciar Sesión</button>
+                </div>
+                
+                <div class="container">
+                    <div id="support" style="background: #f1f1f1;">
+                    <span class="supp" ><a href="#">Soporte Técnico</a></span>
+                    </div>
+                </div>
+                
+                <div class="down-arrow">
+                    <a class="" href="#explanation"><i class="fas fa-chevron-down"></i></a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="explanation">
+        <h1>Movilidad</h1>
+        <h2>Facilitada</h2>
+        <i>De estudiantes, para estudiantes</i>
+        <br>
+        <p>BikeMTY es un sistema de prestamo de bicicletas del Tecnológico de Monterrey y Distrito Tec. Consiste en ingresar tus credenciales de estudiante, elegir una estación de salida y una de llegada. La aplicación te permitirá desanclar una bicicleta de la estación y devolverla en tu destino dentro de un tiempo limitado. <b>Recuerda que pasarte del tiempo resultará en una multa a tu colegiatura</b></p>
+    </div>
+
+
+    <script src="js/functioning.js" type="text/javascript"></script>
+</body>
+
+</html>

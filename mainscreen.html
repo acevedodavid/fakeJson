@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <link href="css/reset.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+    <script src="js/jquery.js" type="text/javascript"></script>
+    <style>
+        /* Set the size of the div element that contains the map */
+
+        #mainscreen {
+            display: contents;
+            position: relative;
+        }
+
+        #map {
+            height: 80%;
+            /* The height is 400 pixels */
+            width: 100%;
+            /* The width is the width of the web page */
+            alignment-baseline: central;
+            position: absolute;
+            z-index: 1;
+        }
+
+        .info-usuario {
+            position: absolute;
+            z-index: 2;
+            height: 20%;
+            bottom: 0;
+        }
+
+        .info-estacion {
+            position: fixed;
+            z-index: 99;
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            color: #f1f1f1;
+            -webkit-transform: translateY(100%);
+            -ms-transform: translateY(100%);
+            transform: translateY(100%);
+        }
+
+        .show-info {
+            -webkit-transform: translateY(0);
+            -ms-transform: translateY(0);
+            transform: translateY(0);
+            -webkit-transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+            -o-transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+            transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+        }
+
+        .hide-info {
+            -webkit-transform: translateY(100%);
+            -ms-transform: translateY(100%);
+            transform: translateY(100%);
+            -webkit-transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+            -o-transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+            transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+        }
+
+        .info-image {
+            width: 80%;
+            padding-top: 5%;
+            padding-bottom: 5%;
+            margin: 0 0 0 10%;
+        }
+
+        .info-texto {
+            padding: 20px;
+            color: #f1f1f1;
+        }
+
+        .info-texto>h3,
+        .info-texto>h4 {
+            display: inline;
+        }
+
+        .info-texto>h1 {
+            font-size: 9vw;
+            padding: 10px 0 10px 0;
+        }
+
+        .info-texto>h3 {
+            font-size: 7vw;
+        }
+
+        .info-texto>h4 {
+            font-size: 8vw;
+        }
+
+        .btn {
+            width: 40%;
+            height: 10%;
+            font-size: 9vw;
+            position: absolute;
+            background: #f1f1f1;
+            color: gray;
+            border-radius: 10px;
+            text-align: center;
+            padding-top: 30px;
+            left: 30%;
+            text-decoration: none;
+        }
+        .popup {
+            position: fixed;
+            z-index: 100;
+            width: 90%;
+            height: 90%;
+            left: 5%;
+            top: 5%;
+            background: rgba(255,255,255,0.8);
+            color: #111111;
+            border-radius: 20px;
+            font-size: 4vw;
+            text-align: center;
+            display: none;
+        }
+        .popup>h1 {
+            font-size: 16vw;
+            padding-top: 20px;
+        }
+        .popup>p {
+            font-size: 6vw;
+            line-height: 1.1em;
+            padding: 10px;
+        }
+        .report-button {
+            width: 30%;
+            height: 15%;
+            font-size: 4vw;
+            background: #f1f1f1;
+            color: gray;
+            border-radius: 10px;
+            text-align: center;
+            padding-top: 10px;
+            left: 20%;
+            text-decoration: none;
+        }
+        .close-button {
+            position: absolute;
+            right: 10px;
+            top; 10px;
+            width: auto;
+            border: none;
+            background: transparent;
+            font-size: 1.5em;
+            color: #111111;
+        }
+        .timer {
+            position: fixed;
+            z-index: 101;
+            width: 40%;
+            height: 10%;
+            background: black;
+            color: #f1f1f1;
+            top: 69%;
+            left: 30%;
+            border-radius: 20px;
+            text-align: center;
+            display: none;
+        }
+        .container-timer {
+            width: 90%;
+            height: 50%;
+            margin: 12% 5%;
+            font-size: 7vw;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="loader-wrapper">
+        <div id="loader">
+            <video id="loader-bici" autoplay muted loop src="videos/loader.mp4"></video>
+        </div>
+        <div class="loader-section section-top"></div>
+        <div class="loader-section section-bottom"></div>
+    </div>
+
+    <div id="mainscreen">
+        <!--The div element for the map -->
+        <div id="map"></div>
+
+        <div class="info-usuario">
+            <h1>User</h1>
+            <a>
+                <h3>My information</h3>
+            </a>
+        </div>
+    </div>
+
+<!------------------------------------------------ INFORMATION OF MArkers  -------------------------------------------------->
+
+    <div class="info-estacion" id="marker1">
+        <div class="down-arrow">
+            <a class="closeInfo" id="close-m1"><i class="fas fa-chevron-down"></i></a>
+        </div>
+        <img src="images/Bici.png" class="info-image">
+        <div class="info-texto">
+            <h1>Aulas 1</h1>
+            <h3>Bicicletas disponibles: </h3>
+            <h4>8</h4>
+            <h4>/8</h4>
+        </div>
+        <a class="btn" href="#">
+            <h1>Rentar</h1>
+        </a>
+    </div>
+
+<!---------------------------------------------------- POPUP RENTAR  ----------------------------------------------------->
+
+    <div class="popup">
+        <a class="close-button" id="close-popup"><i class="fa fa-times"></i></a>
+        <h1>Renta</h1>
+        <p>Puedes ir a la estación de: </p>
+        <h1>Aulas 1</h1>
+        <p>Y agarrar tu bicicleta</p>
+        <h3>Folio: </h3>
+        <h3>Hora: </h3>
+        <a class="report-button">Reportar problema</a>
+        <p>Recuerda dejar la bicicleta en una estación dentro de: </p>
+    </div>
+    
+    <div class="timer">
+        <div class="container-timer">
+            <h1 id="demo"></h1>
+        </div>
+    </div>
+
+    <script>
+        // Initialize and add the map
+        function initMap() {
+            // The location of Uluru
+            var uluru = {
+                lat: 25.6515649,
+                lng: -100.28953999999999
+            };
+            var stand1 = {
+                lat: 25.64821633074306,
+                lng: -100.2900002702554
+            };
+            var stand2 = {
+                lat: 25.64906847058796,
+                lng: -100.29009403745454
+            };
+            var stand3 = {
+                lat: 25.649672023364467,
+                lng: -100.29083218255414
+            };
+            var stand4 = {
+                lat: 25.649600431149533,
+                lng: -100.28939488262017
+            };
+            var stand5 = {
+                lat: 25.649791928637153,
+                lng: -100.28944208910593
+            };
+            var stand6 = {
+                lat: 25.65032773281672,
+                lng: -100.2907853421309
+            };
+            var stand7 = {
+                lat: 25.650165250844875,
+                lng: -100.2892360985968
+            };
+            var stand8 = {
+                lat: 25.650182659627617,
+                lng: -100.28850439217399
+            };
+            var stand9 = {
+                lat: 25.650252294733185,
+                lng: -100.28853872523518
+            };
+            var stand10 = {
+                lat: 25.650596601177963,
+                lng: -100.28932836796207
+            };
+            var stand11 = {
+                lat: 25.650738772346127,
+                lng: -100.28977576121156
+            };
+            var stand12 = {
+                lat: 25.650796463202575,
+                lng: -100.29040389943759
+            };
+            var stand13 = {
+                lat: 25.651153341000636,
+                lng: -100.28748994766204
+            };
+            var stand14 = {
+                lat: 25.651127228019575,
+                lng: -100.2890756698281
+            };
+            var stand15 = {
+                lat: 25.651064363392944,
+                lng: -100.29034167346538
+            };
+            var stand16 = {
+                lat: 25.651168815301066,
+                lng: -100.29168599682009
+            };
+            var stand17 = {
+                lat: 25.65173950764023,
+                lng: -100.28857289394199
+            };
+            var stand18 = {
+                lat: 25.65193100165779,
+                lng: -100.28903208832179
+            };
+            var stand19 = {
+                lat: 25.652470405861425,
+                lng: -100.28900787587344
+            };
+            var stand20 = {
+                lat: 25.651831463052016,
+                lng: -100.28964234521573
+            };
+            var stand21 = {
+                lat: 25.65181018592819,
+                lng: -100.29033757398884
+            };
+            var stand22 = {
+                lat: 25.652542714181703,
+                lng: -100.29066248862352
+            };
+            var stand23 = {
+                lat: 25.652502667204626,
+                lng: -100.2919077351167
+            };
+            var stand24 = {
+                lat: 25.65365225891315,
+                lng: -100.29176811855251
+            };
+            var stand25 = {
+                lat: 25.654492896948742,
+                lng: 100.2927146954587
+            };
+
+            // The map
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 17,
+                center: uluru
+            });
+
+            // ALL MARKERS
+            var markerTec = new google.maps.Marker({
+                position: uluru,
+                map: map
+            });
+            var marker1 = new google.maps.Marker({
+                position: stand1,
+                map: map
+            });
+            var marker2 = new google.maps.Marker({
+                position: stand2,
+                map: map
+            });
+            var marker3 = new google.maps.Marker({
+                position: stand3,
+                map: map
+            });
+            var marker4 = new google.maps.Marker({
+                position: stand4,
+                map: map
+            });
+            var marker5 = new google.maps.Marker({
+                position: stand5,
+                map: map
+            });
+            var marker6 = new google.maps.Marker({
+                position: stand6,
+                map: map
+            });
+            var marker7 = new google.maps.Marker({
+                position: stand7,
+                map: map
+            });
+            var marker8 = new google.maps.Marker({
+                position: stand8,
+                map: map
+            });
+            var marker9 = new google.maps.Marker({
+                position: stand9,
+                map: map
+            });
+            var marker10 = new google.maps.Marker({
+                position: stand10,
+                map: map
+            });
+            var marker11 = new google.maps.Marker({
+                position: stand11,
+                map: map
+            });
+            var marker12 = new google.maps.Marker({
+                position: stand12,
+                map: map
+            });
+            var marker13 = new google.maps.Marker({
+                position: stand13,
+                map: map
+            });
+            var marker14 = new google.maps.Marker({
+                position: stand14,
+                map: map
+            });
+            var marker15 = new google.maps.Marker({
+                position: stand15,
+                map: map
+            });
+            var marker16 = new google.maps.Marker({
+                position: stand16,
+                map: map
+            });
+            var marker17 = new google.maps.Marker({
+                position: stand17,
+                map: map
+            });
+            var marker18 = new google.maps.Marker({
+                position: stand18,
+                map: map
+            });
+            var marker19 = new google.maps.Marker({
+                position: stand19,
+                map: map
+            });
+            var marker20 = new google.maps.Marker({
+                position: stand20,
+                map: map
+            });
+            var marker21 = new google.maps.Marker({
+                position: stand21,
+                map: map
+            });
+            var marker22 = new google.maps.Marker({
+                position: stand22,
+                map: map
+            });
+            var marker23 = new google.maps.Marker({
+                position: stand23,
+                map: map
+            });
+            var marker24 = new google.maps.Marker({
+                position: stand24,
+                map: map
+            });
+            var marker25 = new google.maps.Marker({
+                position: stand25,
+                map: map
+            });
+
+            //ALL INFO DISPLAYERS
+            var infoTec = new google.maps.InfoWindow({
+                content: '<h1>Tecnológico de Monterrey</h1>'
+            });
+            var info1 = new google.maps.InfoWindow({
+                content: '<h1> 8/8 </h1>'
+            });
+            var info2 = new google.maps.InfoWindow({
+                content: '<h1> 8/8 </h1>'
+            });
+            var info3 = new google.maps.InfoWindow({
+                content: '<h1> 8/8 </h1>'
+            });
+            var info4 = new google.maps.InfoWindow({
+                content: '<h1> 8/8 </h1>'
+            });
+            var info5 = new google.maps.InfoWindow({
+                content: '<h1> 8/8 </h1>'
+            });
+            var info6 = new google.maps.InfoWindow({
+                content: '<h1> 8/8 </h1>'
+            });
+            var info7 = new google.maps.InfoWindow({
+                content: '<h1> 8/8 </h1>'
+            });
+            var info8 = new google.maps.InfoWindow({
+                content: '<h1> 8/8 </h1>'
+            });
+            var info9 = new google.maps.InfoWindow({
+                content: '<h1> 8/8 </h1>'
+            });
+            var info10 = new google.maps.InfoWindow({
+                content: '<h1> 8/8 </h1>'
+            });
+            var info11 = new google.maps.InfoWindow({
+                content: '<h1> 8/8 </h1>'
+            });
+            var info12 = new google.maps.InfoWindow({
+                content: '<h1> 8/8 </h1>'
+            });
+            var info13 = new google.maps.InfoWindow({
+                content: '<h1> 8/8 </h1>'
+            });
+            var info14 = new google.maps.InfoWindow({
+                content: '<h1> 8/8 </h1>'
+            });
+            var info15 = new google.maps.InfoWindow({
+                content: '<h1> 8/8 </h1>'
+            });
+            var info16 = new google.maps.InfoWindow({
+                content: '<h1> 8/8 </h1>'
+            });
+            var info17 = new google.maps.InfoWindow({
+                content: '<h1> 8/8 </h1>'
+            });
+            var info18 = new google.maps.InfoWindow({
+                content: '<h1> 8/8 </h1>'
+            });
+            var info19 = new google.maps.InfoWindow({
+                content: '<h1> 8/8 </h1>'
+            });
+            var info20 = new google.maps.InfoWindow({
+                content: '<h1> 8/8 </h1>'
+            });
+            var info21 = new google.maps.InfoWindow({
+                content: '<h1> 8/8 </h1>'
+            });
+            var info22 = new google.maps.InfoWindow({
+                content: '<h1> 8/8 </h1>'
+            });
+            var info23 = new google.maps.InfoWindow({
+                content: '<h1> 8/8 </h1>'
+            });
+            var info24 = new google.maps.InfoWindow({
+                content: '<h1> 8/8 </h1>'
+            });
+            var info25 = new google.maps.InfoWindow({
+                content: '<h1> 8/8 </h1>'
+            });
+
+            //ALL BUTTON LISTENERS
+            /*markerTec.addListener('click', function(){
+            infoTec.open(map, markerTec);});*/
+
+            markerTec.addListener('click', abrirEstacion);
+
+            marker1.addListener('click', function() {
+                info1.open(map, marker1);
+            });
+            marker2.addListener('click', function() {
+                info2.open(map, marker2);
+            });
+            marker3.addListener('click', function() {
+                info3.open(map, marker3);
+            });
+            marker4.addListener('click', function() {
+                info4.open(map, marker4);
+            });
+            marker5.addListener('click', function() {
+                info5.open(map, marker5);
+            });
+            marker6.addListener('click', function() {
+                info6.open(map, marker6);
+            });
+            marker7.addListener('click', function() {
+                info7.open(map, marker7);
+            });
+            marker8.addListener('click', function() {
+                info8.open(map, marker8);
+            });
+            marker9.addListener('click', function() {
+                info9.open(map, marker9);
+            });
+            marker10.addListener('click', function() {
+                info10.open(map, marker10);
+            });
+            marker11.addListener('click', function() {
+                info11.open(map, marker11);
+            });
+            marker12.addListener('click', function() {
+                info12.open(map, marker12);
+            });
+            marker13.addListener('click', function() {
+                info13.open(map, marker13);
+            });
+            marker14.addListener('click', function() {
+                info14.open(map, marker14);
+            });
+            marker15.addListener('click', function() {
+                info15.open(map, marker15);
+            });
+            marker16.addListener('click', function() {
+                info16.open(map, marker16);
+            });
+            marker17.addListener('click', function() {
+                info17.open(map, marker17);
+            });
+            marker18.addListener('click', function() {
+                info18.open(map, marker18);
+            });
+            marker19.addListener('click', function() {
+                info19.open(map, marker19);
+            });
+            marker20.addListener('click', function() {
+                info20.open(map, marker20);
+            });
+            marker21.addListener('click', function() {
+                info21.open(map, marker21);
+            });
+            marker22.addListener('click', function() {
+                info22.open(map, marker22);
+            });
+            marker23.addListener('click', function() {
+                info23.open(map, marker23);
+            });
+            marker24.addListener('click', function() {
+                info24.open(map, marker24);
+            });
+            marker25.addListener('click', function() {
+                info25.open(map, marker25);
+            });
+
+            // Establish the "YOU ARE HERE" caption on click
+            var infoWindow = new google.maps.InfoWindow;
+
+            // Enable geolocation in the api
+            if (navigator.geolocation) {
+                //the "share position" button enabled
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var pos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+
+                    var ownMarker = new google.maps.Marker({
+                        position: pos,
+                        map: map,
+                        icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'
+                    });
+                    infoWindow.setContent('You are here');
+                    ownMarker.addListener('click', function() {
+                        infoWindow.open(map, ownMarker);
+                    });
+                    map.setCenter(pos);
+                }, function() {
+                    handleLocationError(true, infoWindow, map.getCenter());
+                });
+            } else {
+                // Browser doesn't support Geolocation
+                handleLocationError(false, infoWindow, map.getCenter());
+            }
+        }
+
+        // in case the location is not available
+        function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+            infoWindow.setPosition(pos);
+            infoWindow.setContent(browserHasGeolocation ? 'Error: The Geolocation service failed.' : 'Error: Your browser doesn\'t support geolocation.');
+            infoWindow.open(map);
+        }
+
+/*********************************************** Funcion para abrir y cerrar cosas **************************************/
+        function abrirEstacion() {
+            $('#marker1').addClass('show-info');
+            $('#marker1').removeClass('hide-info');
+        }
+        
+        $('#close-m1').click(function() {
+            $('#marker1').removeClass('show-info');
+            $('#marker1').addClass('hide-info');
+        });
+        
+        $('.btn').click(function() {
+            $('#marker1').removeClass('show-info');
+            $('#marker1').addClass('hide-info');
+            $('.popup').css('display','inline-block');
+            $('.timer').css('display','inline-block')
+            iniciarTimer();
+        });
+        
+        $('.close-button').click(function() {
+            $('.popup').css('display','none');
+        });
+        
+        $('.timer').click(function() {
+            $('.popup').css('display','inline-block');
+        });
+        
+/**************************************************** Funcion del Timer  *********************************************/
+        function iniciarTimer() {
+            var countDownDate = new Date().getTime() + new Date(1800000).getTime();
+            var x = setInterval(function() {
+
+              // Get todays date and time
+              var now = new Date().getTime();
+
+              // Find the distance between now and the count down date
+              var distance = countDownDate - now;
+
+              // Time calculations for days, hours, minutes and seconds
+              var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+              var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+              // Display the result in the element with id="demo"
+              document.getElementById("demo").innerHTML = minutes + "m " + seconds + "s ";
+
+              // If the count down is finished, write some text 
+              if (distance < 0) {
+                clearInterval(x);
+                document.getElementById("demo").innerHTML = "Expirado";
+              }
+            }, 1000);
+        }
+        
+    </script>
+    <!--Load the API from the specified URL
+    * The async attribute allows the browser to render the page while the API loads
+    * The key parameter will contain your own API key (which is not needed for this tutorial)
+    * The callback parameter executes the initMap() function
+    -->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDKYv31GLc_Enncj4bGtrC3HfWOlNKvQck&callback=initMap">
+    </script>
+    <script src="js/functioning.js" type="text/javascript"></script>
+</body>
+</html>
