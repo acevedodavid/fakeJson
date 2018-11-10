@@ -6,7 +6,7 @@
   "text_fields" : [
     {
       "key" : "Nombre: ",
-      "body" : NULL
+      "body" : null
     }
   ],
   "questions" : [
@@ -19,7 +19,7 @@
         {
           "correct" : true,
           "tipo" : 1,
-          "text": NULL,
+          "text": null,
           "equation" : "2x(1+2x)"
         }
       ]
