@@ -29,3 +29,4 @@
       {"name":"Factorizacion3","text":"Factoriza el pedo ilv 3","tipo":1,"equation":"(2x + 4x^2)","answers":[{"correct":true,"tipo":1,"text":null,"equation":"2x(1+2x)"}]}
     ]
   }
+]
