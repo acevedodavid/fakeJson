@@ -1,6 +1,6 @@
 [
   {
-    "id":1,
+    "id":"1",
     "subject":"Mate",
     "name":"Parcial 1",
     "institution":"Tec de Monterrey",
@@ -18,7 +18,7 @@
     ]
   },
   {
-    "id":2,
+    "id":"2",
     "subject":"Mate",
     "name":"Parcial 2",
     "institution":"Tec de Monterrey",
